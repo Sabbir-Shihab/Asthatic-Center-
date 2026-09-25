@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('brands', function (Blueprint $t) { $t->id(); $t->string('name'); $t->string('slug')->unique(); $t->text('description')->nullable(); $t->string('logo')->nullable(); $t->boolean('is_active')->default(true); $t->timestamps(); });
+        Schema::create('categories', function (Blueprint $t) { $t->id(); $t->string('name'); $t->string('slug')->unique(); $t->string('icon')->nullable(); $t->text('description')->nullable(); $t->unsignedInteger('sort_order')->default(0); $t->boolean('is_active')->default(true); $t->timestamps(); });
+        Schema::create('products', function (Blueprint $t) { $t->id(); $t->foreignId('brand_id')->constrained()->cascadeOnDelete(); $t->foreignId('category_id')->constrained()->cascadeOnDelete(); $t->string('name'); $t->string('slug')->unique(); $t->text('description')->nullable(); $t->string('image')->nullable(); $t->decimal('price', 10, 2); $t->decimal('compare_at_price', 10, 2)->nullable(); $t->unsignedTinyInteger('rating')->default(5); $t->unsignedInteger('review_count')->default(0); $t->unsignedInteger('stock')->default(0); $t->json('skin_types')->nullable(); $t->boolean('is_featured')->default(false); $t->boolean('is_active')->default(true); $t->timestamps(); });
+        Schema::create('doctors', function (Blueprint $t) { $t->id(); $t->string('name'); $t->string('slug')->unique(); $t->string('designation'); $t->string('photo')->nullable(); $t->json('credentials')->nullable(); $t->unsignedTinyInteger('years_experience')->default(0); $t->text('quote')->nullable(); $t->longText('bio')->nullable(); $t->boolean('is_featured')->default(false); $t->boolean('is_active')->default(true); $t->timestamps(); });
+        Schema::create('treatments', function (Blueprint $t) { $t->id(); $t->string('name'); $t->string('slug')->unique(); $t->string('subtitle')->nullable(); $t->text('description')->nullable(); $t->string('image')->nullable(); $t->unsignedInteger('duration_minutes')->default(60); $t->decimal('price', 10, 2)->nullable(); $t->boolean('is_featured')->default(false); $t->boolean('is_active')->default(true); $t->timestamps(); });
+        Schema::create('testimonials', function (Blueprint $t) { $t->id(); $t->string('client_name'); $t->string('client_photo')->nullable(); $t->text('review'); $t->unsignedTinyInteger('rating')->default(5); $t->boolean('is_featured')->default(false); $t->boolean('is_approved')->default(true); $t->timestamps(); });
+        Schema::create('before_afters', function (Blueprint $t) { $t->id(); $t->string('title'); $t->string('before_image')->nullable(); $t->string('after_image')->nullable(); $t->string('treatment')->nullable(); $t->text('caption')->nullable(); $t->boolean('is_published')->default(true); $t->timestamps(); });
+        Schema::create('appointments', function (Blueprint $t) { $t->id(); $t->foreignId('doctor_id')->nullable()->constrained()->nullOnDelete(); $t->foreignId('treatment_id')->nullable()->constrained()->nullOnDelete(); $t->string('client_name'); $t->string('email'); $t->string('phone'); $t->dateTime('appointment_at'); $t->text('notes')->nullable(); $t->string('status')->default('pending'); $t->timestamps(); });
+        Schema::create('newsletters', function (Blueprint $t) { $t->id(); $t->string('email')->unique(); $t->timestamps(); });
+        Schema::create('orders', function (Blueprint $t) { $t->id(); $t->string('order_number')->unique(); $t->string('customer_name'); $t->string('email'); $t->string('phone'); $t->text('shipping_address'); $t->string('city'); $t->string('status')->default('pending'); $t->decimal('subtotal', 10, 2); $t->decimal('shipping', 10, 2)->default(0); $t->decimal('total', 10, 2); $t->string('payment_method')->default('cod'); $t->timestamps(); });
+        Schema::create('order_items', function (Blueprint $t) { $t->id(); $t->foreignId('order_id')->constrained()->cascadeOnDelete(); $t->foreignId('product_id')->nullable()->constrained()->nullOnDelete(); $t->string('product_name'); $t->unsignedInteger('quantity'); $t->decimal('unit_price', 10, 2); $t->decimal('line_total', 10, 2); $t->timestamps(); });
+    }
+    public function down(): void { Schema::dropIfExists('order_items'); Schema::dropIfExists('orders'); Schema::dropIfExists('newsletters'); Schema::dropIfExists('appointments'); Schema::dropIfExists('before_afters'); Schema::dropIfExists('testimonials'); Schema::dropIfExists('treatments'); Schema::dropIfExists('doctors'); Schema::dropIfExists('products'); Schema::dropIfExists('categories'); Schema::dropIfExists('brands'); }
+};

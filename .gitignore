@@ -1,0 +1,16 @@
+/vendor
+/node_modules
+/public/build
+/.env
+/storage/*.key
+/database/*.sqlite
+/deploy*.zip
+/extract-deploy.php
+/public/fix-storage.php
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*.log
+/storage/edge-profile/
+/bootstrap/cache/*.php
